@@ -89,7 +89,8 @@ check_interval = 0
     image = "docker:latest"
     privileged = true
     disable_cache = false
-    volumes = ["/cache","/home/cj/.m2:/root/.m2:rw"]
+    cache_dir = "cache"
+    volumes = ["/var/run/docker.sock:/var/run/docker.sock","/cache","/home/cj/.m2:/root/.m2:rw"]
     extra_hosts = ["scm-server:192.168.0.221"]
     shm_size = 0
   [runners.cache]
@@ -112,7 +113,7 @@ Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docke
 这个问题一般发生在使用DinD镜像时(DinD = Docker in Docker,即在docker中运行docker) ,也就是ci runner 是在docker中运行,又要使用docker 命令.参考 [issue 1986](https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/issues/1986).
 
 关键是:
-- 修改gitlab-runner的配置文件: privileged = true
+- 修改gitlab-runner的配置文件: privileged = true,挂载/var/run/docker.sock
 - 修改docker 的运行参数,使用 overlay或者overlay2 驱动,[见Docker 手册](https://docs.docker.com/engine/userguide/storagedriver/overlayfs-driver/#configure-docker-with-the-overlay-or-overlay2-storage-driver).注意,这会丢失所有已经创建的容器.
 
 #### 使用私有docker仓库(docker executor)
