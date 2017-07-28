@@ -1,84 +1,58 @@
-## 构建脚本()
+## 构建脚本
+
+构建脚本的名字必须是 `.gitlab-ci.yml`,并且放在项目根目录下(和`.git`文件夹同目录).
+
+### 注意事项
+
+### 变量取值
+脚本中定义的变量在runner端执行时,都是以环境变量形式存在的,因此在使用上需要注意这个问题,比如runner的构建环境是windows命令行,那么应该使用`%`符号来引用变量的值
+```
+script:
+  - echo %MySecret%
+```
+如果runner的构建环境是linux命令行,那么应该使用`$`符号来引用变量的值
+```
+script:
+  - echo $MySecret
+```
+
+关于变量的更详细说明见[官方说明](https://docs.gitlab.com/ce/ci/variables/README.html)
+
+### 变量嵌套
+如果需要定义一个变量,它的值需要引用另外一个变量的值,可以使用两个`$`符号
+```
+variables:
+  LS_CMD: 'ls $FLAGS $$TMP_DIR'
+  FLAGS: '-al'
+script:
+  - 'eval $LS_CMD'  # will execute 'ls -al $TMP_DIR'
+```
+
+### 制品(artifacts)
+在构建脚本中的制品任务主要用于上传构建出来的对象(制品)
+
+这个任务将当前路径下的mycv.pdf上传,保存1周.
+```
+pdf:
+  script: xelatex mycv.tex
+  artifacts:
+    paths:
+    - mycv.pdf
+    expire_in: 1 week 
+```
+上传的文件可以在项目的Pipeline界面中看到.
+
+如果需要手动下载,其URL的规则是:
+- 下载整个artifacts 
+```
+https://example.com/<namespace>/<project>/builds/artifacts/<ref>/download?job=<job_name>
+```
+- 下载artifacts中的某一个文件
+```
+https://example.com/<namespace>/<project>/builds/artifacts/<ref>/raw/<path_to_file>?job=<job_name>
+```
+> 注意,artifacts 在服务器上是以压缩包形式存在的,因为一个项目构建出来的制品不一定是一个单一的文件.
 
 ### 例子(maven项目,docker构建)
 
-```
-# Official docker image.
-image: maven:3.5.0-ibmjava-8
-
-variables:
-  DOCKER_DRIVER: overlay2
-  DOCKER_REGISTRY: 192.168.0.222:9081
-  APP_NAME: demo-jave-app
-
-#services:
-#  - docker:dind
-
-
-stages:
-  - maven-build
-  - maven-test
-  - maven-deploy
-  - docker-build
-  - docker-push
-
-before_script:
-  - chmod a+x ./mvnw
-#  - ping -c 4 scm-server
-# see also :  https://docs.gitlab.com/ce/ci/docker/using_docker_images.html#define-an-image-from-a-private-container-registry
-#  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-
-
-mvn_build:
-  stage: maven-build
-  script:
-    - ./mvnw clean install
-  only:
-    - develop
-  tags:
-    - docker-exec
-
-mvn_test:
-  stage: maven-test
-  script:
-    - ./mvnw test
-  tags:
-    - docker-exec
-
-mvn_deploy:
-  stage: maven-deploy
-  when: manual
-  script:
-    - echo "deploy over..."
-  tags:
-    - docker-exec
-  #only:
-  #  - tags
-
-
-build-docker-master:
-  image: gitlab/dind
-  stage: docker-build
-  script:
-    - docker info
-    - docker version
-    - docker build -t '$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_REF_SLUG' .
-  only:
-    - master
-  tags:
-    - docker-exec
-
-push-docker:
-  image: gitlab/dind
-  stage: docker-push
-  script:
-    - docker info
-    #- docker push <my.container.registry.io>/<my_app>:<my_tag>
-    - docker build -t '$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_REF_SLUG' .
-    - docker push '$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_REF_SLUG'
-  except:
-    - master
-  tags:
-    - docker-exec
-
-```
+[ci-sampel-maven-and-docker](ci-sampel-maven-and-docker.md)

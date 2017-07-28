@@ -116,10 +116,18 @@ Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docke
 - 修改gitlab-runner的配置文件: privileged = true,挂载/var/run/docker.sock
 - 修改docker 的运行参数,使用 overlay或者overlay2 驱动,[见Docker 手册](https://docs.docker.com/engine/userguide/storagedriver/overlayfs-driver/#configure-docker-with-the-overlay-or-overlay2-storage-driver).注意,这会丢失所有已经创建的容器.
 
+> 也有可能是docker 引擎自身运行环境/配置方面有问题,可以尝试检查,重启docker引擎.
+
 #### 使用私有docker仓库(docker executor)
-如果要使用私有仓库,有两种手段:
+如果要使用私有仓库,有3种手段:
 - 在构建脚本中自己执行docker login 命令,但这样密码就泄漏了.
+- 在GitLab Runner主机环境中执行登录命令(docker login),然后将docker 保存登录凭据的文件(`$HOME/.docker/config.json`)挂载到容器中去(在config.toml中设置volumes).
 - 在项目中设置DOCKER_AUTH_CONFIG变量,这个变量包含登录凭据,具体参考[define-an-image-from-a-private-container-registry](https://docs.gitlab.com/ce/ci/docker/using_docker_images.html#define-an-image-from-a-private-container-registry)
 
 #### docker login 报错:https请求收到的是http响应(docker executor)
 有时候构建脚本需要中执行docker login命令登录私有仓库,而私有仓库不是https就会出现这个问题,解决办法是修改 docker 配置文件(/etc/docker/daemon.json) ,加上: "insecure-registries":["服务器地址:端口"]
+
+
+## 参考资料
+
+- [GitLab Runner FAQ](https://github.com/ayufan/gitlab-ci-multi-runner/blob/master/docs/faq/README.md)

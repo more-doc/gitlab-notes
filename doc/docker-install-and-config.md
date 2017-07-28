@@ -78,3 +78,40 @@ Docker Registry 中可以包含多个仓库(Repository).每个仓库可以包含
 > 网上找到的Docker 命令图
 
 ![cmd_logic.png](resources/img/cmd_logic.png)
+
+### 常用的运维命令
+
+#### 查看日志
+```
+journalctl -u docker.service
+```
+> see [read-the-logs](https://docs.docker.com/engine/admin/#read-the-logs)
+
+#### 删除所有Exit状态的容器
+```
+sudo docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs sudo docker rm
+```
+如果当前用户有足够的权限也可以不用sudo:
+```
+docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs  docker rm
+```
+
+#### 进入容器的shell
+
+如果容器正在运行
+```
+docker exec -it $CONTAINER_ID /bin/bash
+```
+直接启动一个新的容器
+```
+docker run -it --entrypoint '/bin/sh' $YOUR_DOCKER_IMAGE
+
+```
+
+#### Docker 引擎服务
+```
+service docker start
+service docker stop
+service docker restart
+service docker status
+```
