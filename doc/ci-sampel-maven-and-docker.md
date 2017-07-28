@@ -36,7 +36,7 @@ variables:
   DOCKER_REGISTRY_PASS: "123456"
   DOCKER_IMAGE_NAME: "demo-jave-app"
   JAR_FILE_NAME: "example.jar"
-  UPLOADED_JAR: "http://scm-server/chenjun/ci-example-docker/builds/artifacts/${CI_COMMIT_REF_SLUG}/raw/target/example.jar?job=mvn_build"
+  UPLOADED_JAR: "http://scm-server/chenjun/ci-example-docker/builds/artifacts/${CI_COMMIT_REF_NAME}/raw/target/example.jar?job=mvn_build"
 
 #services:
 #  - mysql:latest
