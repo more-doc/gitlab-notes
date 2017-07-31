@@ -1,0 +1,90 @@
+image: maven:3.5.0-ibmjava-8
+
+variables:
+  DOCKER_DRIVER: "overlay2"
+  DOCKER_REGISTRY: "192.168.0.222:9081"
+  DOCKER_REGISTRY_USER: "xd-developer"
+  DOCKER_REGISTRY_PASS: "123456"
+  DOCKER_IMAGE_NAME: "demo-jave-app"
+  JAR_FILE_NAME: "example.jar"
+  UPLOADED_JAR: "http://scm-server/chenjun/ci-example-docker/builds/artifacts/${CI_COMMIT_REF_NAME}}/raw/target/example.jar?job=mvn_build"
+
+#services:
+#  - mysql:latest
+
+
+stages:
+  - maven-build
+  - maven-test
+  - maven-deploy
+  - docker-build
+  - docker-push
+
+before_script:
+  - chmod a+x ./mvnw
+  - echo ${UPLOADED_JAR}
+#  - echo "$DOCKER_AUTH_CONFIG"
+#  - ping -c 4 scm-server
+# see also :  https://docs.gitlab.com/ce/ci/docker/using_docker_images.html#define-an-image-from-a-private-container-registry
+#  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+# artifacts url is  https://example.com/<namespace>/<project>/builds/artifacts/<ref>/download?job=<job_name>
+mvn_build:
+  stage: maven-build
+  script:
+    - ./mvnw clean package
+  artifacts: 
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    paths:
+      - target/*.jar
+    expire_in: 1 week 
+  tags:
+    - docker-exec
+
+mvn_test:
+  stage: maven-test
+  script:
+    - ./mvnw test
+  tags:
+    - docker-exec
+
+mvn_deploy:
+  stage: maven-deploy
+  when: manual
+  script:
+    - echo "TODO - run mvnw deploy"
+  tags:
+    - docker-exec
+  #only:
+  #  - tags
+
+
+build-docker-master:
+  image: gitlab/dind
+  stage: docker-build
+  when: manual
+  script:
+    - docker version
+    #- docker info
+    #- docker build -t <my.container.registry.io>/<my_app>:<my_tag> .
+    - docker build --build-arg PRE_BUILD_JAR_URL=$UPLOADED_JAR -t $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_REF_SLUG  .
+  only:
+    - master
+  tags:
+    - docker-exec
+
+push-docker:
+  image: gitlab/dind
+  stage: docker-push
+  when: manual
+  script:
+    - docker info
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASS $DOCKER_REGISTRY
+    - docker build --build-arg PRE_BUILD_JAR_URL=$UPLOADED_JAR -t $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_REF_SLUG .
+    - docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_REF_SLUG
+  except:
+    - master
+  tags:
+    - docker-exec
+
+

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>me.jcalzz</groupId>
+	<artifactId>example</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>example</name>
+	<description>Demo project for Spring Boot</description>
+
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.4.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+        <!--<docker.image.prefix>ci_example</docker.image.prefix>-->
+        <docker.registry>192.168.0.222:9081</docker.registry>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-actuator-docs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+        <finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>all-release</id>
+			<url>http://192.168.0.222:8081/repository/all-releases/</url>
+		</repository>
+		<repository>
+			<id>all-packages</id>
+			<url>http://192.168.0.222:8081/repository/all/</url>
+		</repository>
+	</repositories>
+		
+	<distributionManagement>
+		<!--<repository>
+			<id>xd-docker-dist-1</id>
+			<name>xd-docker-dist-1</name>
+			<url>http://192.168.0.222:8081/repository/docker-dist-1/</url>
+		</repository>-->
+		<repository>
+			<id>xd-mvn-dist-1</id>
+			<name>xd-mvn-dist-1</name>
+			<url>http://192.168.0.222:8081/repository/mvn-dist-1/</url>
+		</repository>
+		<snapshotRepository>
+			<id>xd-mvn-dev-1</id>
+			<name>xd-mvn-dev-1</name>
+			<url>http://192.168.0.222:8081/repository/mvn-dev-1/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+</project>
