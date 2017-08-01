@@ -87,13 +87,28 @@ journalctl -u docker.service
 ```
 > see [read-the-logs](https://docs.docker.com/engine/admin/#read-the-logs)
 
-#### 删除所有Exit状态的容器
+#### 镜像/容器清理
+删除所有Exit状态的容器
 ```
-sudo docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs sudo docker rm
+docker ps -q -f status=exited | xargs --no-run-if-empty docker rm
 ```
-如果当前用户有足够的权限也可以不用sudo:
+
+删除所有没有打tag的镜像
 ```
-docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs  docker rm
+docker rmi $(docker images | grep “^<none>” | awk ‘{print $3}’)
+```
+删除所有没有使用的镜像
+```
+docker images -q -f dangling=true | xargs --no-run-if-empty docker rmi
+```
+
+Docker [1.13.0](https://github.com/docker/docker/blob/master/CHANGELOG.md#1130-2016-12-08) 及其以上,可以使用以下命令
+```
+docker container prune   # Remove all stopped containers
+docker volume prune      # Remove all unused volumes
+docker image prune       # Remove unused images
+docker system prune      # All of the above, in this order: containers, volumes, images
+docker system df         # Show docker disk usage, including space reclaimable by pruning
 ```
 
 #### 进入容器的shell
