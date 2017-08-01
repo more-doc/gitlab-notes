@@ -127,7 +127,33 @@ Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docke
 #### docker login 报错:https请求收到的是http响应(docker executor)
 有时候构建脚本需要中执行docker login命令登录私有仓库,而私有仓库不是https就会出现这个问题,解决办法是修改 docker 配置文件(/etc/docker/daemon.json) ,加上: "insecure-registries":["服务器地址:端口"]
 
+### 常用命令
 
-## 参考资料
+```
+USAGE:
+   gitlab-runner [global options] command [command options] [arguments...]
+
+COMMANDS:
+   exec     execute a build locally
+   run      run multi runner service
+   register register a new runner
+   install  install service
+   uninstall    uninstall service
+   start    start service
+   stop     stop service
+   restart  restart service
+   status   get status of a service
+   run-single   start single runner
+   unregister   unregister specific runner
+   verify   verify all registered runners
+   archive  find and archive files (internal)
+   artifacts    upload build artifacts (internal)
+   extract  extract files from an archive (internal)
+   help, h  Shows a list of commands or help for one command
+
+```
+
+
+### 参考资料
 
 - [GitLab Runner FAQ](https://github.com/ayufan/gitlab-ci-multi-runner/blob/master/docs/faq/README.md)
