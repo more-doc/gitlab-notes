@@ -27,6 +27,19 @@ $ sudo docker run hello-world
 
 ### 配置
 
+#### 允许非root用户使用docker
+
+docker 命令需要使用 Unix socket 与 Docker 引擎通讯.而只有 root 用户和 docker 组的用户才可以访问 Docker 引擎的 Unix socket.
+
+```
+# 给docker用户组赋予当前用户
+sudo usermod -a -G docker $USER
+```
+> - 重新登录后生效
+
+
+#### Docker镜像仓库
+
 由于不能说的原因,第一件事情就是要设置dcoker仓库的镜像,经过测试可用的公共镜像仓库有:
 
 - Docker 官方的国内镜像 https://registry.docker-cn.com 
