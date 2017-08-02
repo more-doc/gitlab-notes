@@ -41,6 +41,16 @@ $ sudo docker run hello-world
 
 > 有的网上的资料是通过修改命令行参数(`--registry-mirrors`)来设置,这是比较老的方法了,新版的 Docker 使用 /etc/docker/daemon.json(Linux)或者 %programdata%\docker\config\daemon.json(Windows) 来配置 Daemon
 
+以下是一个典型的daemon.json文件(ubuntu 16.04 amd64)
+```
+{
+  "registry-mirrors": ["https://docker.mirrors.ustc.edu.cn","https://registry.docker-cn.com"],
+  "insecure-registries":["192.168.0.222:9081"],
+  "storage-driver": "overlay2"
+}
+```
+
+
 ### Docker 基本概念
 Docker 常用属于有
 - 镜像(Image)
