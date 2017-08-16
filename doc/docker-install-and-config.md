@@ -58,7 +58,7 @@ sudo usermod -a -G docker $USER
 ```
 {
   "registry-mirrors": ["https://docker.mirrors.ustc.edu.cn","https://registry.docker-cn.com"],
-  "insecure-registries":["192.168.0.222:9081"],
+  "insecure-registries":["192.168.0.222:9081","192.168.0.222:9091"],
   "storage-driver": "overlay2"
 }
 ```
