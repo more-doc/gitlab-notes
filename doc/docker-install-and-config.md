@@ -146,6 +146,36 @@ docker run -it --entrypoint '/bin/sh' $YOUR_DOCKER_IMAGE
 
 ```
 
+#### 加代理
+创建`/etc/systemd/system/docker.service.d/http-proxy.conf`文件(如果不存在)
+```
+mkdir -p /etc/systemd/system/docker.service.d
+# echo "" > /etc/systemd/system/docker.service.d/http-proxy.conf
+```
+
+在`/etc/systemd/system/docker.service.d/http-proxy.conf`中添加代理环境变量
+```
+[Service]
+Environment="HTTP_PROXY=http://proxy.example.com:80/" "NO_PROXY=localhost,127.0.0.1,192.168.0.220"
+Environment="HTTPS_PROXY=https://proxy.example.com:443/" "NO_PROXY=localhost,127.0.0.1,192.168.0.220"
+```
+> 后面的 `NO_PROXY` 是指定哪些地址不使用代理
+
+重启docker服务
+```
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+验证设置是否生效
+```
+systemctl show --property=Environment docker
+```
+> 应该会显示`Environment=HTTP_PROXY=http://proxy.example.com:80/`
+
+参考资料: [https://docs.docker.com/engine/admin/systemd/#httphttps-proxy](https://docs.docker.com/engine/admin/systemd/#httphttps-proxy)
+
+
 #### Docker 引擎服务
 ```
 service docker start
