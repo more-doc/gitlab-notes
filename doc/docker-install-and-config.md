@@ -156,7 +156,7 @@ mkdir -p /etc/systemd/system/docker.service.d
 在`/etc/systemd/system/docker.service.d/http-proxy.conf`中添加代理环境变量
 ```
 [Service]
-Environment="HTTP_PROXY=http://192.168.0.164:8388" "HTTPS_PROXY=http://192.168.0.164:8388" "NO_PROXY=192.168.0.222:9081,192.168.0.222:9091,localhost,127.0.0.1,192.168.0.220"
+Environment="HTTP_PROXY=http://192.168.0.164:8388" "HTTPS_PROXY=http://192.168.0.164:8388" "NO_PROXY=localhost,127.0.0.1,192.168.0.220,192.168.0.222"
 ```
 > 后面的 `NO_PROXY` 是指定哪些地址不使用代理
 
